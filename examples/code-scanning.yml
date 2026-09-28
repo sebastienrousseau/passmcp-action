@@ -1,0 +1,35 @@
+# SPDX-FileCopyrightText: 2026 Sebastien Rousseau <sebastian.rousseau@gmail.com>
+# SPDX-License-Identifier: Apache-2.0
+#
+# Failing checks where people already look: each becomes a code-scanning
+# alert, linked to the check's entry in passmcp's inventory. `fail-on: never`
+# because the alerts are the outcome; the job records them and does not
+# also turn red.
+name: MCP server code scanning
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  passmcp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: sebastienrousseau/passmcp-action@v0.0.1
+        id: passmcp
+        with:
+          endpoint: https://mcp.example.com/mcp
+          token: ${{ secrets.MCP_TOKEN }}
+          fail-on: never
+
+      - uses: github/codeql-action/upload-sarif@1c5b675653bb5c22dbe9b12b556ec555138e09fd # v4.38.1
+        if: always()
+        with:
+          sarif_file: ${{ steps.passmcp.outputs.sarif }}
+          category: passmcp

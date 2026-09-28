@@ -1,0 +1,90 @@
+# SPDX-FileCopyrightText: 2026 Sebastien Rousseau <sebastian.rousseau@gmail.com>
+# SPDX-License-Identifier: Apache-2.0
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: actionlint and shellcheck
+        env:
+          GOTOOLCHAIN: auto
+        run: |
+          set -euo pipefail
+          go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.7
+          shellcheck scripts/*.sh
+      - name: Every source file carries an SPDX header
+        run: scripts/spdx-check.sh
+      - name: The retired name appears only in the provenance line
+        run: ./scripts/name-guard.sh
+
+  smoke:
+    name: The pinned image runs
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # The action against itself, without a server: proves the digest
+      # pulls, the entrypoint answers, and the composite steps parse.
+      - name: passmcp version through the action
+        id: version
+        uses: ./
+        with:
+          command: version
+          upload: "false"
+      # And a check that must refuse cleanly: no endpoint is an error
+      # from the action, not a hang or a docker error.
+      - name: A check with no endpoint is refused
+        id: refused
+        continue-on-error: true
+        uses: ./
+        with:
+          upload: "false"
+      - name: It was refused
+        env:
+          OUTCOME: ${{ steps.refused.outcome }}
+        run: |
+          set -euo pipefail
+          [ "${OUTCOME}" = "failure" ] || { echo "::error::a check with no endpoint should fail, got ${OUTCOME}"; exit 1; }
+
+  checks:
+    name: Repository Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: The pinned digest is the image of this version
+        run: make digest
+      - name: This repository's row in the family manifest is true
+        run: make family
+      - name: Version Lockstep
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: make lockstep

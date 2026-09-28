@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: 2026 Sebastien Rousseau <sebastian.rousseau@gmail.com>
+# SPDX-License-Identifier: Apache-2.0
+#
+# A nightly diagnostic. The Markdown report lands on the run's summary
+# page; the report, the SARIF file and the redacted telemetry are kept as
+# an artifact whether the job passed or failed.
+name: MCP server diagnostic
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  passmcp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: sebastienrousseau/passmcp-action@v0.0.1
+        with:
+          endpoint: https://mcp.example.com/mcp
+          token: ${{ secrets.MCP_TOKEN }}

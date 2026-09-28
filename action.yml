@@ -1,0 +1,187 @@
+# SPDX-FileCopyrightText: 2026 Sebastien Rousseau <sebastian.rousseau@gmail.com>
+# SPDX-License-Identifier: Apache-2.0
+
+name: "passmcp MCP server diagnostic"
+description: "Run passmcp against a Model Context Protocol server: 120 checks in nine phases, every finding tied to the request that produced it, from the published image pinned by digest."
+author: "Sebastien Rousseau"
+
+branding:
+  icon: "activity"
+  color: "orange"
+
+# The action runs the container image passmcp's release pipeline published,
+# pinned by digest so that what runs here is exactly what the release
+# signed. Every input maps to a flag passmcp check already has; nothing here
+# changes what passmcp does, only where it runs.
+inputs:
+  endpoint:
+    description: "The server's Streamable HTTP URL. Required unless `command` is not `check`."
+    required: false
+    default: ""
+  token:
+    description: "A bearer token for the server, passed to passmcp through the environment (`--token-env`), never as an argument. Use a secret."
+    required: false
+    default: ""
+  policy:
+    description: "Path, relative to the workspace, of an acceptance policy file (`--policy`). Empty means the default rule: any failure fails."
+    required: false
+    default: ""
+  args:
+    description: "Extra flags for `passmcp check`, as one string (for example `--rps 5 --skip-era-check`)."
+    required: false
+    default: ""
+  report-dir:
+    description: "Directory, relative to the workspace, that receives report.{txt,md,json,html,junit.xml,sarif}, telemetry.ndjson and telemetry.har."
+    required: false
+    default: "passmcp-report"
+  fail-on:
+    description: "What fails the job: `failure` (the default: passmcp's exit 2, a failing check or an unmet policy, and exit 1, a run that could not complete), `error` (only exit 1), or `never` (record the outcome in outputs and let the caller decide)."
+    required: false
+    default: "failure"
+  summary:
+    description: "Append passmcp's Markdown report to the job summary."
+    required: false
+    default: "true"
+  attest:
+    description: "Also write `attestation.json`, the in-toto statement about the server, beside the report. Sign it with cosign or `actions/attest` in a later step."
+    required: false
+    default: "false"
+  upload:
+    description: "Upload the report directory as a workflow artifact named `passmcp-report`, on success and on failure."
+    required: false
+    default: "true"
+  command:
+    description: "The passmcp command to run. `check` runs the diagnostic; `version` prints the pinned passmcp and is what this repository's own CI uses to prove the image runs."
+    required: false
+    default: "check"
+  image:
+    description: "Override the image reference. The default is the image of the passmcp release this action version is in lockstep with, pinned by digest; overriding it means you are no longer running what the release signed."
+    required: false
+    default: "ghcr.io/sebastienrousseau/passmcp@sha256:aa9a804dda854897ac8c843935fb12a3829f56702aa3c3d5529d6e54e7e3ac12"
+
+outputs:
+  exit-code:
+    description: "passmcp's exit code: 0 all checks passed, 1 the run could not complete, 2 a check failed or the policy was not met."
+    value: ${{ steps.run.outputs.exit-code }}
+  score:
+    description: "The total score, 0 to 100, from report.json; empty when the run produced no report."
+    value: ${{ steps.run.outputs.score }}
+  grade:
+    description: "The letter grade from report.json; empty when the run produced no report."
+    value: ${{ steps.run.outputs.grade }}
+  report:
+    description: "Path of report.json, relative to the workspace."
+    value: ${{ steps.run.outputs.report }}
+  sarif:
+    description: "Path of report.sarif, for `github/codeql-action/upload-sarif`."
+    value: ${{ steps.run.outputs.sarif }}
+  attestation:
+    description: "Path of attestation.json when `attest` was true."
+    value: ${{ steps.run.outputs.attestation }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Pull the pinned image
+      shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+      run: |
+        set -euo pipefail
+        docker pull --quiet "${IMAGE}"
+
+    - name: Run passmcp
+      id: run
+      shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+        COMMAND: ${{ inputs.command }}
+        ENDPOINT: ${{ inputs.endpoint }}
+        MCP_TOKEN: ${{ inputs.token }}
+        POLICY: ${{ inputs.policy }}
+        EXTRA_ARGS: ${{ inputs.args }}
+        REPORT_DIR: ${{ inputs.report-dir }}
+        FAIL_ON: ${{ inputs.fail-on }}
+        WITH_SUMMARY: ${{ inputs.summary }}
+        WITH_ATTEST: ${{ inputs.attest }}
+      run: |
+        set -euo pipefail
+        case "${FAIL_ON}" in failure|error|never) ;; *)
+          echo "::error::fail-on must be failure, error or never, not '${FAIL_ON}'"; exit 1 ;;
+        esac
+
+        case "${REPORT_DIR}" in /*|*..*) echo "::error::report-dir must be a relative path inside the workspace"; exit 1 ;; esac
+        mkdir -p "${REPORT_DIR}"
+
+        run_passmcp() {
+          # -e MCP_TOKEN forwards the variable by name: the value is never an
+          # argument, so it never appears in ps, a shell trace or this log.
+          # The container runs as the runner's own user, so what passmcp writes
+          # under the report directory is owned by the workflow that reads it
+          # and nothing in the workspace has to be made world-writable; HOME
+          # points at the container's /tmp because that user has none there.
+          docker run --rm \
+            --user "$(id -u):$(id -g)" -e HOME=/tmp \
+            -e MCP_TOKEN \
+            -v "${GITHUB_WORKSPACE}:/work" -w /work \
+            "${IMAGE}" "$@"
+        }
+
+        if [[ "${COMMAND}" != "check" ]]; then
+          # Anything but check runs the command as given, for this
+          # repository's own smoke test (version) and for a caller who
+          # knows what they are doing.
+          run_passmcp "${COMMAND}" ${EXTRA_ARGS}
+          echo "exit-code=0" >> "${GITHUB_OUTPUT}"
+          exit 0
+        fi
+
+        [[ -n "${ENDPOINT}" ]] || { echo "::error::endpoint is required for passmcp check"; exit 1; }
+        # --report-dir writes report.{txt,md,json,html,junit.xml,sarif} and the
+        # telemetry; the text report goes to the step log.
+        args=(check "${ENDPOINT}" --report-dir "/work/${REPORT_DIR}" --no-color)
+        [[ -n "${MCP_TOKEN}" ]] && args+=(--token-env MCP_TOKEN)
+        if [[ -n "${POLICY}" ]]; then
+          [[ -f "${POLICY}" ]] || { echo "::error::policy file ${POLICY} does not exist"; exit 1; }
+          args+=(--policy "/work/${POLICY}")
+        fi
+        # shellcheck disable=SC2206 # the extra flags are meant to split
+        args+=(${EXTRA_ARGS})
+
+        rc=0
+        run_passmcp "${args[@]}" || rc=$?
+        echo "exit-code=${rc}" >> "${GITHUB_OUTPUT}"
+        echo "report=${REPORT_DIR}/report.json" >> "${GITHUB_OUTPUT}"
+        echo "sarif=${REPORT_DIR}/report.sarif" >> "${GITHUB_OUTPUT}"
+
+        if [[ -f "${REPORT_DIR}/report.json" ]]; then
+          echo "score=$(jq -r '.score.total // empty' "${REPORT_DIR}/report.json")" >> "${GITHUB_OUTPUT}"
+          echo "grade=$(jq -r '.score.grade // empty' "${REPORT_DIR}/report.json")" >> "${GITHUB_OUTPUT}"
+          if [[ "${WITH_ATTEST}" == "true" ]]; then
+            run_passmcp attest "/work/${REPORT_DIR}/report.json" > "${REPORT_DIR}/attestation.json"
+            echo "attestation=${REPORT_DIR}/attestation.json" >> "${GITHUB_OUTPUT}"
+          fi
+        else
+          echo "score=" >> "${GITHUB_OUTPUT}"
+          echo "grade=" >> "${GITHUB_OUTPUT}"
+        fi
+        if [[ "${WITH_SUMMARY}" == "true" && -f "${REPORT_DIR}/report.md" ]]; then
+          cat "${REPORT_DIR}/report.md" >> "${GITHUB_STEP_SUMMARY}"
+        fi
+
+        case "${rc}:${FAIL_ON}" in
+          0:*) echo "passmcp: every check passed" ;;
+          *:never) echo "::notice::passmcp exited ${rc}; fail-on is never, so the job continues" ;;
+          1:*) echo "::error::passmcp could not complete the run (exit 1); see ${REPORT_DIR}/report.txt"; exit 1 ;;
+          2:error) echo "::warning::passmcp found failing checks (exit 2); fail-on is error, so the job continues" ;;
+          2:failure) echo "::error::passmcp found failing checks or the policy was not met (exit 2); see ${REPORT_DIR}/report.md"; exit 2 ;;
+          *) echo "::error::passmcp exited ${rc}"; exit "${rc}" ;;
+        esac
+
+    - name: Keep the evidence
+      if: ${{ always() && inputs.upload == 'true' && inputs.command == 'check' }}
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: passmcp-report
+        path: ${{ inputs.report-dir }}
+        if-no-files-found: ignore

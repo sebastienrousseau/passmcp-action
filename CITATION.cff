@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: 2026 Sebastien Rousseau <sebastian.rousseau@gmail.com>
+# SPDX-License-Identifier: Apache-2.0
+
+cff-version: 1.2.0
+title: "passmcp-action: run the passmcp MCP server diagnostic in GitHub Actions and GitLab CI"
+message: "If you use this software, please cite it using these metadata."
+type: software
+authors:
+  - family-names: Rousseau
+    given-names: Sebastien
+    email: sebastian.rousseau@gmail.com
+repository-code: "https://github.com/sebastienrousseau/passmcp-action"
+abstract: >-
+  A composite GitHub Action and a GitLab CI template that run passmcp, the
+  Model Context Protocol server diagnostic, from the container image its
+  release pipeline published, pinned by digest.
+keywords:
+  - model-context-protocol
+  - mcp
+  - github-actions
+  - gitlab-ci
+  - diagnostics
+license: Apache-2.0

@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: 2026 Sebastien Rousseau <sebastian.rousseau@gmail.com>
+# SPDX-License-Identifier: Apache-2.0
+
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore(actions)"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    # The passmcp image in action.yml is pinned by digest on purpose and is
+    # moved by the sync workflow when passmcp releases, never by Dependabot:
+    # the action must run the image of the version it is in lockstep with.

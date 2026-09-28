@@ -1,0 +1,35 @@
+# SPDX-FileCopyrightText: 2026 Sebastien Rousseau <sebastian.rousseau@gmail.com>
+# SPDX-License-Identifier: Apache-2.0
+#
+# passmcp in GitLab CI, from the published image pinned by digest.
+#
+#   include:
+#     - remote: https://raw.githubusercontent.com/sebastienrousseau/passmcp-action/v0.0.1/templates/passmcp.gitlab-ci.yml
+#
+# then set MCP_ENDPOINT, and MCP_TOKEN as a masked, protected variable. passmcp
+# reads the token from the environment; it is never an argument.
+
+variables:
+  PASSMCP_IMAGE: "ghcr.io/sebastienrousseau/passmcp@sha256:aa9a804dda854897ac8c843935fb12a3829f56702aa3c3d5529d6e54e7e3ac12"
+  PASSMCP_ARGS: "--rps 2"
+
+mcp-diagnostic:
+  image:
+    name: "${PASSMCP_IMAGE}"
+    entrypoint: [""]
+  timeout: 15m
+  script:
+    - >
+      /usr/local/bin/passmcp check "${MCP_ENDPOINT}" --token-env MCP_TOKEN
+      --report-dir passmcp-report --no-color ${PASSMCP_ARGS}
+  artifacts:
+    when: always
+    paths:
+      - passmcp-report/
+    reports:
+      sast: passmcp-report/report.sarif
+    expire_in: 30 days
+  allow_failure:
+    # 2 is "a check failed or the policy was not met": the report is the
+    # point, so it is recorded as a failed job rather than a broken one.
+    exit_codes: []

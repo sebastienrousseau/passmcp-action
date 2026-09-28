@@ -1,0 +1,83 @@
+# SPDX-FileCopyrightText: 2026 Sebastien Rousseau <sebastian.rousseau@gmail.com>
+# SPDX-License-Identifier: Apache-2.0
+
+# A release of an action is a signed tag and a moving major tag. This
+# publishes the release page with the CHANGELOG section as its notes and
+# moves the `v0` tag to the release, which is what a workflow that says
+# `uses: sebastienrousseau/passmcp-action@v0` follows.
+name: Release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions: {}
+
+jobs:
+  release:
+    name: Publish release notes and move the major tag
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: The tag, the changelog, the snippets and the digest agree
+        run: |
+          set -euo pipefail
+          scripts/verify-release-versions.sh "${GITHUB_REF_NAME}"
+          make digest
+
+      - name: Notes from the changelog section
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          ver="${TAG#v}"
+          # shellcheck disable=SC2016 # awk's program is meant to be single-quoted
+          awk -v ver="$ver" '
+            $0 ~ "^## \\[" ver "\\]" { on = 1; next }
+            on && /^## \[/ { exit }
+            on { print }
+          ' CHANGELOG.md > notes.md
+          [ -s notes.md ] || { echo "no changelog section for $ver" >&2; exit 1; }
+          image=$(scripts/pinned-image.sh)
+          cat >> notes.md <<EOF
+
+          ---
+
+          Use it:
+
+          \`\`\`yaml
+          - uses: sebastienrousseau/passmcp-action@${TAG}
+          \`\`\`
+
+          Runs \`${image}\`.
+          EOF
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: gh release create "$TAG" --title "passmcp-action $TAG" --notes-file notes.md --verify-tag
+
+      - name: Move the major tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          major="${TAG%%.*}"
+          sha=$(git rev-parse "${TAG}^{commit}")
+          if gh api "repos/${REPO}/git/ref/tags/${major}" >/dev/null 2>&1; then
+            gh api --method PATCH "repos/${REPO}/git/refs/tags/${major}" -f sha="${sha}" -F force=true >/dev/null
+          else
+            gh api --method POST "repos/${REPO}/git/refs" -f ref="refs/tags/${major}" -f sha="${sha}" >/dev/null
+          fi
+          echo "${major} -> ${TAG} (${sha})"

@@ -1,0 +1,43 @@
+# SPDX-FileCopyrightText: 2026 Sebastien Rousseau <sebastian.rousseau@gmail.com>
+# SPDX-License-Identifier: Apache-2.0
+#
+# Gate a deployment on an acceptance policy committed in the repository.
+# The policy names the checks that must pass, caps failures and warnings,
+# and can carry exemptions with a reason, a ticket and an expiry date —
+# which is the difference between a gate a team keeps and one it switches
+# off. See passmcp's manual, "Acceptance policies".
+name: Gate the MCP server
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  passmcp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: sebastienrousseau/passmcp-action@v0.0.1
+        id: passmcp
+        with:
+          endpoint: https://staging.mcp.example.com/mcp
+          token: ${{ secrets.STAGING_MCP_TOKEN }}
+          policy: .passmcp/policy.json
+          fail-on: failure
+
+      # The outputs are there even when the step failed the job, for a
+      # notification step with `if: always()`.
+      - name: Say what happened
+        if: always()
+        env:
+          SCORE: ${{ steps.passmcp.outputs.score }}
+          GRADE: ${{ steps.passmcp.outputs.grade }}
+          CODE: ${{ steps.passmcp.outputs.exit-code }}
+        run: echo "passmcp scored ${SCORE} (${GRADE}), exit ${CODE}"
