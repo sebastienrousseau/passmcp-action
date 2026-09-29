@@ -16,6 +16,15 @@ changelog says what changed in the diagnostic.
 
 ## [Unreleased]
 
+## [0.0.3]
+
+### Changed
+
+- **Only the version moves.** Nothing in the action, the GitLab
+  template or the scripts changed since 0.0.2. This section is opened on
+  the release branch ahead of passmcp 0.0.3; the sync workflow dates it
+  and adds the pinned image when that release dispatches.
+
 ## [0.0.2] — 2026-09-29
 
 ### Added
@@ -69,5 +78,6 @@ The first release.
   signed, pinned by digest, with the token never on a command line.
 
 [Unreleased]: https://github.com/sebastienrousseau/passmcp-action/compare/v0.0.2...HEAD
+[0.0.3]: https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.3
 [0.0.2]: https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.2
 [0.0.1]: https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.1
