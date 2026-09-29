@@ -14,7 +14,7 @@ here with nothing else in it is the version rule working. The sync
 workflow opens the section on passmcp's release dispatch; passmcp's own
 changelog says what changed in the diagnostic.
 
-## [0.0.1] — Unreleased
+## [0.0.1] — 2026-09-29
 
 The first release.
 
