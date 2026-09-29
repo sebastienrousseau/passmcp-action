@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2026 Sebastien Rousseau <sebastian.rousseau@gmail.com>
+# SPDX-License-Identifier: Apache-2.0
+#
+# A stand-in for curl, put first on PATH by the tests so no test touches
+# the network. It answers the four requests the scripts make, from
+# environment variables the test sets:
+#
+#   STUB_DIGEST     the docker-content-digest a manifest HEAD returns
+#   STUB_RELEASE    the body of passmcp's releases/latest
+#   STUB_MANIFEST   the body of the family manifest
+#   STUB_FAIL       a URL substring that answers HTTP 403, as curl -f does
+set -euo pipefail
+
+out="" head=0 url=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -o) out="$2"; shift 2 ;;
+    -H) shift 2 ;;
+    -*I*) head=1; shift ;;
+    -*) shift ;;
+    *) url="$1"; shift ;;
+  esac
+done
+
+if [ -n "${STUB_FAIL:-}" ] && [[ "${url}" == *"${STUB_FAIL}"* ]]; then
+  echo "curl: (22) The requested URL returned error: 403" >&2
+  exit 22
+fi
+
+if [ "${head}" -eq 1 ]; then
+  printf 'HTTP/2 200\r\n'
+  [ -z "${STUB_DIGEST:-}" ] || printf 'docker-content-digest: %s\r\n' "${STUB_DIGEST}"
+  printf '\r\n'
+  exit 0
+fi
+
+case "${url}" in
+  *ghcr.io/token*) body='{"token":"stub"}' ;;
+  *releases/latest*) body="${STUB_RELEASE:-}" ;;
+  *) body="${STUB_MANIFEST:-}" ;;
+esac
+if [ -n "${out}" ]; then printf '%s' "${body}" >"${out}"; else printf '%s' "${body}"; fi

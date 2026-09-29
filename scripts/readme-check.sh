@@ -9,33 +9,20 @@
 #
 #   scripts/readme-check.sh [README.md]
 set -euo pipefail
-cd "$(dirname "${BASH_SOURCE[0]}")/.."
+cd "${PASSMCP_ACTION_ROOT:-$(dirname "${BASH_SOURCE[0]}")/..}"
 readme="${1:-README.md}"
 [ -f "${readme}" ] || { echo "readme-check: ${readme} not found" >&2; exit 1; }
 
 project=$(sed -n 's|^<h1 align="center">\([^<]*\)</h1>$|\1|p' "${readme}" | head -1)
 [ -n "${project}" ] || { echo "readme-check: no centred plain-text <h1 align=\"center\">name</h1>" >&2; exit 1; }
 
-expected=$(cat <<LIST
-Contents
-Install
-Requirements
-Quick Start
-The ${project} ecosystem
-Capabilities at a glance
-Ecosystem comparison
-Benchmarks
-Features
-Configuration
-Examples
-When not to use ${project}
-Development
-Security
-Documentation
-Stability guarantees
-License
-LIST
+headings=(
+  "Contents" "Install" "Requirements" "Quick Start" "The ${project} ecosystem"
+  "Capabilities at a glance" "Ecosystem comparison" "Benchmarks" "Features"
+  "Configuration" "Examples" "When not to use ${project}" "Development"
+  "Security" "Documentation" "Stability guarantees" "License"
 )
+expected=$(printf '%s\n' "${headings[@]}")
 
 # Second-level headings and template tokens, both outside fenced code.
 outside_code=$(awk '/^[[:space:]]*(```|~~~)/ { fence = !fence; next } !fence' "${readme}")

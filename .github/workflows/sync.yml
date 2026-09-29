@@ -69,21 +69,35 @@ jobs:
           set -euo pipefail
           ver="${VERSION#v}"
           image="ghcr.io/sebastienrousseau/passmcp@${DIGEST}"
-          if grep -Eq "^## \[${ver}\]" CHANGELOG.md; then
+          # Done only when the section is dated and the image is pinned: a
+          # release branch may have prepared the undated section beforehand.
+          if grep -Eq "^## \[${ver}\] — " CHANGELOG.md && grep -qF "${image}" action.yml; then
             echo "already at ${VERSION}"; echo "changed=false" >> "${GITHUB_OUTPUT}"; exit 0
           fi
           sed -i "s|ghcr.io/sebastienrousseau/passmcp@sha256:[0-9a-f]\{64\}|${image}|g" action.yml templates/passmcp.gitlab-ci.yml
           sed -i -E "s|passmcp-action@v[0-9]+\.[0-9]+\.[0-9]+|passmcp-action@${VERSION}|g; s|passmcp-action/v[0-9]+\.[0-9]+\.[0-9]+/|passmcp-action/${VERSION}/|g" README.md templates/passmcp.gitlab-ci.yml examples/*.yml
           today=$(date -u +%Y-%m-%d)
+          # The family's ecosystem sentence and the citation carry the version
+          # too; "Released in" statuses keep the version a capability first
+          # shipped in, and the release highlights are written by hand.
+          sed -i -E "s/released at \*\*[0-9]+\.[0-9]+\.[0-9]+\*\*/released at **${ver}**/" README.md
+          sed -i -E "s/^version: .*/version: ${ver}/; s/^date-released: .*/date-released: \"${today}\"/" CITATION.cff
           python3 - "$ver" "$today" "$DIGEST" <<'PY'
           import re, sys
           ver, today, digest = sys.argv[1:]
           def release_changelog(c, ver, today, bullet):
-              """Open the section for ver above the unreleased entries, with the
-              lockstep bullet first under ### Changed: merged into an existing
-              Changed list, or a new one placed in Keep a Changelog's order."""
-              head = "## [Unreleased]\n"
-              start = c.index(head) + len(head)
+              """Date the section for ver, with the lockstep bullet first under
+              ### Changed: merged into an existing Changed list, or a new one
+              placed in Keep a Changelog's order. The section is the one a
+              release branch prepared, or else it is opened from the
+              unreleased entries."""
+              prepared = re.search(rf"(?m)^## \[{re.escape(ver)}\][^\n]*\n", c)
+              if prepared:
+                  cut, start = prepared.start(), prepared.end()
+              else:
+                  head = "## [Unreleased]\n"
+                  start = c.index(head) + len(head)
+                  cut = start
               nxt = re.search(r"(?m)^## \[", c[start:])
               end = start + nxt.start() if nxt else len(c)
               pending = c[start:end].strip("\n")
@@ -93,14 +107,16 @@ jobs:
                   name, _, body = part.partition("\n")
                   name, body = name.strip(), body.strip("\n")
                   blocks[name] = (blocks[name] + "\n" + body) if name in blocks else body
-              blocks["Changed"] = bullet + ("\n" + blocks["Changed"] if blocks.get("Changed") else "")
+              if bullet not in blocks.get("Changed", ""):
+                  blocks["Changed"] = bullet + ("\n" + blocks["Changed"] if blocks.get("Changed") else "")
               canon = ["Added", "Changed", "Deprecated", "Removed", "Fixed", "Security"]
               names = sorted(blocks, key=lambda n: canon.index(n) if n in canon else len(canon))
               body = "\n\n".join(f"### {n}\n\n{blocks[n]}" for n in names)
               section = f"## [{ver}] — {today}\n\n" + (lead + "\n\n" if lead else "") + body + "\n\n"
-              c = c[:start] + "\n" + section + c[end:]
+              c = c[:cut] + ("" if prepared else "\n") + section + c[end:]
+              link = "" if re.search(rf"(?m)^\[{re.escape(ver)}\]: ", c) else rf"\n[{ver}]: \1/releases/tag/v{ver}"
               return re.sub(r"\[Unreleased\]: (.*)/compare/v[0-9.]+\.\.\.HEAD",
-                            rf"[Unreleased]: \1/compare/v{ver}...HEAD\n[{ver}]: \1/releases/tag/v{ver}", c)
+                            rf"[Unreleased]: \1/compare/v{ver}...HEAD" + link, c)
           s = open("CHANGELOG.md").read()
           bullet = (f"- **In lockstep with passmcp {ver}.** The action and the GitLab template pin "
                    f"`ghcr.io/sebastienrousseau/passmcp@{digest}`, the multi-arch image passmcp's release published for {ver}. "
@@ -143,6 +159,8 @@ jobs:
             pr_token="${GH_TOKEN}"
             echo "::notice::SYNC_TOKEN is not set: the pull request is opened with GITHUB_TOKEN, so close and reopen it to start its checks"
           fi
-          GH_TOKEN="${pr_token}" gh pr create --base main --head "${branch}" \
+          # The branch the workflow ran on: main on a dispatch, or the release
+          # branch a maintainer chose with `gh workflow run --ref`.
+          GH_TOKEN="${pr_token}" gh pr create --base "${GITHUB_REF_NAME}" --head "${branch}" \
             --title "chore: sync with passmcp ${VERSION}" \
             --body "Opened by the sync workflow on passmcp's release dispatch. Pins the ${VERSION} image by digest in action.yml and the GitLab template, and opens the changelog section. CI's digest and lockstep checks are the review."

@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: sebastienrousseau/passmcp-action@v0.0.1
+      - uses: sebastienrousseau/passmcp-action@v0.0.2
         with:
           endpoint: https://mcp.example.com/mcp
           token: ${{ secrets.MCP_TOKEN }}

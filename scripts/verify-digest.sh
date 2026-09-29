@@ -9,10 +9,12 @@
 #
 #   scripts/verify-digest.sh
 set -euo pipefail
-cd "$(dirname "${BASH_SOURCE[0]}")/.."
+here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+cd "${PASSMCP_ACTION_ROOT:-$(dirname "${BASH_SOURCE[0]}")/..}"
 
-version=$(grep -Eo '^## \[[0-9]+\.[0-9]+\.[0-9]+\]' CHANGELOG.md | head -1 | tr -d '#[] ')
-pinned=$(scripts/pinned-image.sh)
+version=$(grep -Eo '^## \[[0-9]+\.[0-9]+\.[0-9]+\]' CHANGELOG.md | head -1 | tr -d '#[] ' || true)
+[ -n "$version" ] || { echo "verify-digest: CHANGELOG.md has no released version heading" >&2; exit 1; }
+pinned=$("${here}/pinned-image.sh")
 pinned_digest="${pinned#*@}"
 
 # Fetched to a file and parsed from it, never piped into an interpreter:
@@ -21,10 +23,12 @@ tokfile=$(mktemp)
 trap 'rm -f "$tokfile"' EXIT
 curl -fsSL "https://ghcr.io/token?scope=repository:sebastienrousseau/passmcp:pull" -o "$tokfile"
 token=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["token"])' "$tokfile")
-published=$(curl -fsSI -H "Authorization: Bearer ${token}" \
-  -H "Accept: application/vnd.oci.image.index.v1+json, application/vnd.docker.distribution.manifest.list.v2+json" \
-  "https://ghcr.io/v2/sebastienrousseau/passmcp/manifests/${version}" \
-  | tr -d '\r' | awk 'tolower($1) == "docker-content-digest:" { print $2 }')
+accept="application/vnd.oci.image.index.v1+json, application/vnd.docker.distribution.manifest.list.v2+json"
+manifest="https://ghcr.io/v2/sebastienrousseau/passmcp/manifests/${version}"
+# A version passmcp has not released yet answers 404: say which, not curl's code.
+headers=$(curl -fsSI -H "Authorization: Bearer ${token}" -H "Accept: ${accept}" "${manifest}") \
+  || { echo "verify-digest: ghcr.io has no image tagged ${version}; the manifest request failed" >&2; exit 1; }
+published=$(tr -d '\r' <<<"${headers}" | awk 'tolower($1) == "docker-content-digest:" { print $2 }')
 [ -n "$published" ] || { echo "verify-digest: ghcr.io has no image tagged ${version}" >&2; exit 1; }
 
 # The GitLab template pins the same image; one digest, two places.
