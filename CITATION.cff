@@ -9,7 +9,7 @@ authors:
   - family-names: Rousseau
     given-names: Sebastien
     email: sebastian.rousseau@gmail.com
-version: 0.0.1
+version: 0.0.2
 date-released: "2026-09-29"
 url: "https://sebastienrousseau.com/passmcp-action/"
 repository-code: "https://github.com/sebastienrousseau/passmcp-action"

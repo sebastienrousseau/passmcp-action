@@ -16,7 +16,7 @@ changelog says what changed in the diagnostic.
 
 ## [Unreleased]
 
-## [0.0.2]
+## [0.0.2] — 2026-09-29
 
 ### Added
 
@@ -31,6 +31,7 @@ changelog says what changed in the diagnostic.
 
 ### Changed
 
+- **In lockstep with passmcp 0.0.2.** The action and the GitLab template pin `ghcr.io/sebastienrousseau/passmcp@sha256:fb15e3a3ff2bc2270ce308778ead54da3f10bd0f8160aaab4a06a60a2da6bbdb`, the multi-arch image passmcp's release published for 0.0.2. Opened by the sync workflow on the release's dispatch; passmcp's own changelog says what changed in the diagnostic.
 - **The README follows the family standard**: seven badges in one format,
   the family's ecosystem table with every component linked, and concrete
   release statuses in place of "Stable" and "planned".

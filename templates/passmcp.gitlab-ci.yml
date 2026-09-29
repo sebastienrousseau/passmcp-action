@@ -4,13 +4,13 @@
 # passmcp in GitLab CI, from the published image pinned by digest.
 #
 #   include:
-#     - remote: https://raw.githubusercontent.com/sebastienrousseau/passmcp-action/v0.0.1/templates/passmcp.gitlab-ci.yml
+#     - remote: https://raw.githubusercontent.com/sebastienrousseau/passmcp-action/v0.0.2/templates/passmcp.gitlab-ci.yml
 #
 # then set MCP_ENDPOINT, and MCP_TOKEN as a masked, protected variable. passmcp
 # reads the token from the environment; it is never an argument.
 
 variables:
-  PASSMCP_IMAGE: "ghcr.io/sebastienrousseau/passmcp@sha256:4dab755abbdbff1079879a834f0f27806c6de7d0c710b85e50e91ae80f412c02"
+  PASSMCP_IMAGE: "ghcr.io/sebastienrousseau/passmcp@sha256:fb15e3a3ff2bc2270ce308778ead54da3f10bd0f8160aaab4a06a60a2da6bbdb"
   PASSMCP_ARGS: "--rps 2"
 
 mcp-diagnostic:
