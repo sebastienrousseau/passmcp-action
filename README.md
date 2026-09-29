@@ -12,12 +12,13 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/sebastienrousseau/passmcp-action/actions"><img src="https://img.shields.io/github/actions/workflow/status/sebastienrousseau/passmcp-action/ci.yml?style=for-the-badge&logo=github" alt="Build Status" /></a>
-  <a href="https://github.com/marketplace/actions/passmcp-server-server-diagnostic"><img src="https://img.shields.io/badge/marketplace-passmcp-fc8d62?style=for-the-badge&logo=github" alt="GitHub Marketplace" /></a>
-  <a href="https://satellion.com/passmcp/docs/ci/"><img src="https://img.shields.io/badge/docs-CI%20guide-brightgreen?style=for-the-badge&logo=github" alt="Documentation" /></a>
-  <a href="https://scorecard.dev/viewer/?uri=satellion.com/passmcp-action"><img src="https://img.shields.io/ossf-scorecard/satellion.com/passmcp-action?style=for-the-badge&label=OpenSSF%20Scorecard&logo=openssf" alt="OpenSSF Scorecard" /></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache--2.0-blue?style=for-the-badge" alt="License: Apache-2.0" /></a>
-  <a href="#requirements"><img src="https://img.shields.io/badge/runner-ubuntu%20%2B%20docker-93450a.svg?style=for-the-badge&logo=docker&logoColor=white" alt="Runs on a Linux runner with Docker" /></a>
+  <a href="https://github.com/sebastienrousseau/passmcp-action/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/sebastienrousseau/passmcp-action/ci.yml?branch=main&style=for-the-badge&logo=github&label=Build" alt="Build" /></a>
+  <a href="https://github.com/sebastienrousseau/passmcp-action/blob/main/DEVELOPMENT.md#coverage"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fsebastienrousseau.com%2Fpassmcp-action%2Fcoverage.json&style=for-the-badge&logo=codecov&logoColor=white" alt="Coverage" /></a>
+  <a href="https://github.com/sebastienrousseau/passmcp-action/releases"><img src="https://img.shields.io/github/v/release/sebastienrousseau/passmcp-action?style=for-the-badge&color=fc8d62&logo=github&label=Release" alt="Release" /></a>
+  <a href="https://sebastienrousseau.com/passmcp-action/"><img src="https://img.shields.io/badge/docs-manual-007d9c?style=for-the-badge&labelColor=555555&logo=readthedocs&logoColor=white" alt="Docs" /></a>
+  <a href="https://scorecard.dev/viewer/?uri=github.com/sebastienrousseau/passmcp-action"><img src="https://img.shields.io/ossf-scorecard/github.com/sebastienrousseau/passmcp-action?style=for-the-badge&label=OpenSSF%20Scorecard&logo=openssf" alt="OpenSSF Scorecard" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg?style=for-the-badge" alt="License: Apache-2.0" /></a>
+  <a href="https://github.com/sebastienrousseau/passmcp-action/blob/main/DEVELOPMENT.md#requirements"><img src="https://img.shields.io/badge/runner-linux%20%2B%20docker-93450a.svg?style=for-the-badge&logo=docker" alt="Runner: Linux with Docker" /></a>
 </p>
 
 ---
@@ -32,9 +33,9 @@
 
 **The passmcp-action ecosystem**
 
-- [The passmcp-action ecosystem](#the-passmcp-action-ecosystem) — `passmcp`, `passmcp-reporting`, `passmcp-action`, `passmcp-server`, `passmcp-lsp`, `passmcp-census` at a glance
+- [The passmcp-action ecosystem](#the-passmcp-action-ecosystem) — `passmcp`, `passmcp-reporting`, `passmcp-server`, `passmcp-action`, `passmcp-graph`, `passmcp-registry`, `passmcp-lsp`, `passmcp-census`, `satellion.com` at a glance
 
-**Reference**
+**Library reference**
 
 - [Capabilities at a glance](#capabilities-at-a-glance) — every input and output
 - [Ecosystem comparison](#ecosystem-comparison) — beside installing passmcp yourself
@@ -133,25 +134,19 @@ a log.
 
 ## The passmcp-action ecosystem
 
-One engine, three surfaces, five satellites. This repository is the
-cheapest verifiable traction signal in the family: GitHub publishes how
-many workflows use an action.
+Every component is released at **0.0.1** and moves in lockstep: one version across the family, released together ([docs/ecosystem.md](https://github.com/sebastienrousseau/passmcp/blob/main/docs/ecosystem.md)).
 
 | Component | Purpose | Use case |
 | :--- | :--- | :--- |
-| [`passmcp`](https://github.com/sebastienrousseau/passmcp) | The engine, every check, and the CLI, TUI and web surfaces (GPL-3.0-only) | Evaluate a server and write the statement |
-| [`passmcp-reporting`](https://github.com/sebastienrousseau/passmcp-reporting) | The attestation format, its schema and the offline verifier (Apache-2.0) | Gate on a statement in a gateway, registry or pipeline |
-| **`passmcp-action`** | The GitHub Action and GitLab template wrapping the published image by digest (Apache-2.0) | Run passmcp in CI without installing it |
-| `passmcp-server` | passmcp's diagnostics as MCP tools (planned) | Evaluate a server from inside an editor |
-| `passmcp-lsp` | A language server over MCP artefacts (planned) | Hover a check id for its remediation |
-| `passmcp-census` | The published reliability census (planned) | Reproduce the numbers |
-
-The family manifest lives in passmcp at
-[`docs/ecosystem.md`](https://github.com/sebastienrousseau/passmcp/blob/main/docs/ecosystem.md);
-`make family` checks this repository's row against it. Every lockstep
-repository carries passmcp's version: a passmcp release dispatches to this one,
-the sync workflow pins the new image, and the pull request it opens is the
-release.
+| [passmcp](https://github.com/sebastienrousseau/passmcp) | The MCP server diagnostic: checks in nine phases, every finding tied to the request that showed it, signed attestations | Test a server before your agents trust it, and gate it in CI |
+| [passmcp-reporting](https://github.com/sebastienrousseau/passmcp-reporting) | The attestation format, its JSON Schemas and offline verifier, the graph model, and the agentgateway processor | Verify an attestation in a gateway, registry or pipeline |
+| [passmcp-server](https://github.com/sebastienrousseau/passmcp-server) | passmcp's diagnostics as read-only MCP tools | Evaluate a server, or check an attestation, from inside the agent |
+| [passmcp-action](https://github.com/sebastienrousseau/passmcp-action) | passmcp in GitHub Actions and GitLab CI, the image pinned by digest | Fail a build on the findings you choose |
+| [passmcp-graph](https://github.com/sebastienrousseau/passmcp-graph) | A local graph of agents, servers, tools and identities built from attestations | Find inherited risk and over-privilege, and gate on policy |
+| [passmcp-registry](https://github.com/sebastienrousseau/passmcp-registry) | A signed public scorecard of the MCP Registry's remote servers | Check a public server's standing before connecting to it |
+| [passmcp-lsp](https://github.com/sebastienrousseau/passmcp-lsp) | A language server for MCP artefacts, with check-id hover from the guidance catalogue | Catch mistakes in server.json, tool schemas and client configuration while editing |
+| [passmcp-census](https://github.com/sebastienrousseau/passmcp-census) | The published reliability census: dataset, methodology, disclosure log and reproduction command | Cite ecosystem-wide reliability figures, and reproduce them |
+| [satellion.com](https://github.com/sebastienrousseau/satellion.github.io) | The website, the Go module paths and the format URIs | Read the manual, and resolve `satellion.com/...` imports |
 
 ---
 
@@ -159,15 +154,15 @@ release.
 
 | Area | Capability | Status |
 | :--- | :--- | :--- |
-| Target | `endpoint`: a Streamable HTTP URL | Stable |
-| Credentials | `token`, forwarded through the environment as `MCP_TOKEN` | Stable |
-| Gating | `policy`: an acceptance policy file; `fail-on`: `failure`, `error` or `never` | Stable |
-| Pacing and everything else | `args`: any flag `passmcp check` takes | Stable |
-| Evidence | `report-dir` with `report.{txt,md,json}`, `report.sarif`, `telemetry.{ndjson,har}`; `upload` as an artifact | Stable |
-| Where people look | `summary` on the run page; `report.sarif` for code scanning | Stable |
-| Attestation | `attest`: the in-toto statement beside the report, to sign in a later step | Stable |
-| Outputs | `exit-code`, `score`, `grade`, `report`, `sarif`, `attestation` | Stable |
-| Servers that are programs (`--stdio`) | not through the image; see [When not to use](#when-not-to-use-passmcp-action) | Out of scope |
+| Target | `endpoint`: a Streamable HTTP URL | [Released in 0.0.1](https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.1) |
+| Credentials | `token`, forwarded through the environment as `MCP_TOKEN` | [Released in 0.0.1](https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.1) |
+| Gating | `policy`: an acceptance policy file; `fail-on`: `failure`, `error` or `never` | [Released in 0.0.1](https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.1) |
+| Pacing and everything else | `args`: any flag `passmcp check` takes | [Released in 0.0.1](https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.1) |
+| Evidence | `report-dir` with `report.{txt,md,json}`, `report.sarif`, `telemetry.{ndjson,har}`; `upload` as an artifact | [Released in 0.0.1](https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.1) |
+| Where people look | `summary` on the run page; `report.sarif` for code scanning | [Released in 0.0.1](https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.1) |
+| Attestation | `attest`: the in-toto statement beside the report, to sign in a later step | [Released in 0.0.1](https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.1) |
+| Outputs | `exit-code`, `score`, `grade`, `report`, `sarif`, `attestation` | [Released in 0.0.1](https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.1) |
+| Servers that are programs (`--stdio`) | not through the image | Not supported by design: see [When not to use](#when-not-to-use-passmcp-action) |
 
 ---
 
@@ -190,16 +185,16 @@ evidence kept on failure.
 ## Benchmarks
 
 The wrapper adds one image pull and one container start to a run; the run
-itself is passmcp's, and passmcp's manual publishes its request budget. On
-`ubuntu-latest`, pulling the 15 MB multi-arch image takes a few seconds
-the first time and is cached after; starting the container is under a
-second. There is no benchmark suite here because there is nothing here to
-measure that is not passmcp.
+itself is passmcp's, and passmcp's manual publishes its request budget.
+There is no benchmark suite here because there is nothing here to measure
+that is not passmcp. The one number the wrapper owns is the size of what it
+pulls, read from the registry's manifest for the pinned 0.0.1 image:
 
 | Scenario | Result | Environment |
 | :--- | ---: | :--- |
-| Image pull, cold | seconds, network-bound | `ubuntu-latest` |
-| Container start | under a second | `ubuntu-latest` |
+| Image download, compressed layers | 6,912,228 bytes | `linux/amd64` manifest on ghcr.io |
+| Image download, compressed layers | 6,361,425 bytes | `linux/arm64` manifest on ghcr.io |
+| Pull and container start time | not measured | network- and runner-bound |
 | The diagnostic | passmcp's own timings, in `report.json` | the target server |
 
 ---
@@ -289,15 +284,23 @@ A capability the action lacks is a change to passmcp, not to the action.
 ## Development
 
 ```bash
-make lint        # actionlint (with shellcheck), shellcheck on the scripts
+make lint        # actionlint (with shellcheck), shellcheck on the scripts and tests
+make unit        # the bats suite for every script, with the network stubbed
+make coverage    # the same suite under bashcov; fails below 85%, writes coverage/badge.json
+make versions    # every version-bearing place names the CHANGELOG version
 make digest      # the pinned digest is the image of this version, in both places
 make lockstep    # the version is passmcp's latest release
 make family      # this repository's row in passmcp's family manifest
-make test        # run the pinned image: passmcp version
+make test        # the unit suite, then the pinned image: passmcp version
 ```
 
 [DEVELOPMENT.md](DEVELOPMENT.md) maps every CI gate to its local form and
-explains the sync and release workflows.
+explains the sync and release workflows. The family manifest lives in
+passmcp at
+[`docs/ecosystem.md`](https://github.com/sebastienrousseau/passmcp/blob/main/docs/ecosystem.md);
+`make family` checks this repository's row against it. A passmcp release
+dispatches to this repository, the sync workflow pins the new image, and
+the pull request it opens is the release.
 
 ---
 
@@ -318,8 +321,8 @@ Report vulnerabilities according to [`SECURITY.md`](SECURITY.md).
 
 The four entry points, identical across every repo in the family:
 
-- **[User Manual](https://satellion.com/passmcp/docs/)** — passmcp's rendered manual: the phases, the report, the CI guide
-- **[API reference](https://pkg.go.dev/satellion.com/passmcp)** — the Go packages behind the binary the image runs
+- **[User Manual](https://sebastienrousseau.com/passmcp-action/)** — this repository's rendered manual; passmcp's own is at [satellion.com/passmcp/docs](https://satellion.com/passmcp/docs/)
+- **[API reference](action.yml)** — every input and output of the action, with its description
 - **[Developer docs](DEVELOPMENT.md)** — the gates, the sync workflow, the release model
 - **[Ecosystem map](https://github.com/sebastienrousseau/passmcp/blob/main/docs/ecosystem.md)** — the family, the published artefacts, the lockstep version rule
 
@@ -327,7 +330,9 @@ The four entry points, identical across every repo in the family:
 |---|---|
 | [`action.yml`](action.yml) | Every input and output, with its description, as the Marketplace shows them |
 | [`templates/passmcp.gitlab-ci.yml`](templates/passmcp.gitlab-ci.yml) | The GitLab job |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | How one run flows, and how the action stays in step with passmcp |
 | [`docs/adr/`](docs/adr/README.md) | Decision records for this repository |
+| [`docs/releases/v0.0.1.md`](docs/releases/v0.0.1.md) | The 0.0.1 release highlights |
 | [`SECURITY.md`](SECURITY.md) | Disclosure policy, what is pinned, what is never logged |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | Signed-commit and DCO policy, what a change needs |
 | [`CHANGELOG.md`](CHANGELOG.md) | Per-release notes, and the lockstep version rule |

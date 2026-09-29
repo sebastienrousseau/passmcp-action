@@ -12,10 +12,18 @@ Invariants for AI-assisted contributions. Read
 |---|---|
 | actionlint and shellcheck at zero findings | `make lint` |
 | SPDX header on every file | `make spdx-check` |
+| Every version-bearing place names one version | `make versions` |
+| A test for every script behaviour, 85% line coverage | `make coverage` |
 | The pinned digest is the image of this version | `make digest` |
 | The version is passmcp's latest release | `make lockstep` |
 | The family manifest's row is true | `make family` |
-| The pinned image runs | `make test` |
+| The unit suite passes and the pinned image runs | `make test` |
+| The retired name appears nowhere | `make name-guard` |
+
+Tests never reach the network: extend `tests/bin/curl` with the answer a
+new request needs. Keep heredoc bodies and multi-line `$(...)` out of the
+scripts; bashcov counts those lines and cannot see them run
+([ADR 0004](docs/adr/0004-coverage-traces-the-scripts-not-bats.md)).
 
 ## Commits
 

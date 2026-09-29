@@ -6,14 +6,14 @@
 # compliance is a gate rather than a habit. REUSE.toml covers the files a
 # header cannot go in.
 set -euo pipefail
-cd "$(dirname "${BASH_SOURCE[0]}")/.."
+cd "${PASSMCP_ACTION_ROOT:-$(dirname "${BASH_SOURCE[0]}")/..}"
 missing=0
 # Assembled at run time so that this line is not itself read as a licence
 # expression by the REUSE linter.
 tag="SPDX-License-Identifier"
 while IFS= read -r f; do
   case "$f" in
-    LICENSE|LICENSES/*|.gitignore|.github/CODEOWNERS|docs/requirements.txt) continue ;;  # REUSE.toml covers these
+    LICENSE|LICENSES/*|.gitignore|.github/CODEOWNERS|docs/requirements.txt|tests/Gemfile.lock) continue ;;  # REUSE.toml covers these
   esac
   if ! head -5 "$f" | grep -q "${tag}:"; then
     echo "spdx-check: no licence header: $f" >&2

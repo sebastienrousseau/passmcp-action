@@ -9,6 +9,9 @@ authors:
   - family-names: Rousseau
     given-names: Sebastien
     email: sebastian.rousseau@gmail.com
+version: 0.0.1
+date-released: "2026-09-29"
+url: "https://sebastienrousseau.com/passmcp-action/"
 repository-code: "https://github.com/sebastienrousseau/passmcp-action"
 abstract: >-
   A composite GitHub Action and a GitLab CI template that run passmcp, the

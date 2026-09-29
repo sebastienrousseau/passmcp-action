@@ -46,6 +46,13 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - Architecture: ARCHITECTURE.md
   - Decision records:
       - Index: adr/README.md
       - 0001 The image by digest and nothing else: adr/0001-the-image-by-digest-and-nothing-else.md
+      - 0002 The token through the environment: adr/0002-the-token-through-the-environment.md
+      - 0003 The version is passmcp's: adr/0003-the-version-is-passmcps.md
+      - 0004 Coverage traces the scripts: adr/0004-coverage-traces-the-scripts-not-bats.md
+  - Releases:
+      - 0.0.2: releases/v0.0.2.md
+      - 0.0.1: releases/v0.0.1.md

@@ -5,7 +5,9 @@ name: Manual
 
 # Builds the manual on every change to it, strictly, so a broken link or
 # nav entry fails the pull request rather than the reader; and deploys it
-# to GitHub Pages from main.
+# to GitHub Pages from main, with coverage.json beside it: the shields.io
+# endpoint the README's coverage badge reads, from the same `make coverage`
+# CI runs. A change to the scripts or the tests redeploys it.
 
 on:
   push:
@@ -13,12 +15,20 @@ on:
     paths:
       - 'docs/**'
       - 'mkdocs.yml'
+      - 'scripts/**'
+      - 'tests/**'
+      - '.simplecov'
+      - 'Makefile'
       - '.github/workflows/manual.yml'
   pull_request:
     branches: [main]
     paths:
       - 'docs/**'
       - 'mkdocs.yml'
+      - 'scripts/**'
+      - 'tests/**'
+      - '.simplecov'
+      - 'Makefile'
       - '.github/workflows/manual.yml'
   workflow_dispatch:
 
@@ -35,6 +45,8 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: read
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/tests/Gemfile
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -55,6 +67,22 @@ jobs:
           python3 -m pip install --quiet --disable-pip-version-check \
             --require-hashes -r docs/requirements.txt
           mkdocs build --strict --site-dir public
+
+      - name: Install bats
+        run: sudo apt-get install -y --no-install-recommends bats
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1.327.0
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+          working-directory: tests
+
+      - name: Coverage badge endpoint
+        run: |
+          set -euo pipefail
+          make coverage BASHCOV="bundle exec bashcov"
+          cp coverage/badge.json public/coverage.json
 
       - name: Upload the site for Pages
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'

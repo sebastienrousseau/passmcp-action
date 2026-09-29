@@ -24,6 +24,7 @@
     // the endpoint it was given.
     "site/dist/**",
     "public/**",
+    "coverage/**",
     ".github/ISSUE_TEMPLATE/**"
   ],
   "config": {

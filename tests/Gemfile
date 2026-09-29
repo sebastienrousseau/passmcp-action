@@ -1,0 +1,10 @@
+# SPDX-FileCopyrightText: 2026 Sebastien Rousseau <sebastian.rousseau@gmail.com>
+# SPDX-License-Identifier: Apache-2.0
+#
+# The coverage tool for the shell scripts, and nothing else: bashcov runs
+# the bats suite and SimpleCov reports the lines each script executed.
+# Gemfile.lock pins both, with checksums.
+
+source "https://rubygems.org"
+
+gem "bashcov", "4.0.0"
