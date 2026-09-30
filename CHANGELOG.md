@@ -26,6 +26,14 @@ changelog says what changed in the diagnostic.
   the release branch ahead of passmcp 0.0.3; the sync workflow dates it
   and adds the pinned image when that release dispatches.
 
+### Fixed
+
+- **The sync workflow keeps a release to one pull request.** On
+  passmcp's release dispatch it opened its own pull request into `main`,
+  beside the release branch's. When `feat/vX.Y.Z` exists it now commits
+  the pins onto that branch instead, and opens a pull request only when
+  there is no release branch.
+
 ## [0.0.2] — 2026-09-29
 
 ### Added
