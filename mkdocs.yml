@@ -4,7 +4,7 @@
 site_name: passmcp-action
 site_description: Run passmcp in GitHub Actions and GitLab CI, from the release image pinned by digest.
 site_url: https://sebastienrousseau.com/passmcp-action/
-copyright: '<a href="https://sebastienrousseau.com/" rel="author">&copy; 2026 Sebastien Rousseau</a>'
+copyright: '&copy; 2026 <a href="https://sebastienrousseau.com/" rel="author">Sebastien Rousseau</a>'
 repo_url: https://github.com/sebastienrousseau/passmcp-action
 repo_name: sebastienrousseau/passmcp-action
 edit_uri: edit/main/docs/
