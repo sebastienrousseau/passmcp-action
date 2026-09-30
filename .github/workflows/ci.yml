@@ -31,7 +31,7 @@ jobs:
         run: |
           set -euo pipefail
           go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.7
-          shellcheck scripts/*.sh tests/traced.sh tests/bin/curl tests/helpers.bash tests/*.bats
+          shellcheck scripts/*.sh tests/traced.sh tests/bin/curl tests/bin/gh tests/helpers.bash tests/*.bats
       - name: Every source file carries an SPDX header
         run: scripts/spdx-check.sh
       - name: The retired name appears nowhere

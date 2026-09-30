@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2026 Sebastien Rousseau <sebastian.rousseau@gmail.com>
+# SPDX-License-Identifier: Apache-2.0
+#
+# A stand-in for gh, put first on PATH by the tests so no test touches
+# GitHub. It answers the calls scripts/release-page.sh makes, from
+# environment variables the test sets, and logs every call to STUB_GH_LOG:
+#
+#   STUB_NOTES       the file generate-notes returns as the body
+#   STUB_ASSETS      a directory holding the release's assets
+#   STUB_NO_RELEASE  set: `release view` finds no release
+#   STUB_GH_FAIL     a substring of the arguments that makes gh fail
+#   STUB_TAMPER      set: the read-back returns another page
+#
+# `release create` and `release edit` record the title and notes in
+# STUB_GH_LOG.page, which the read-back returns.
+set -euo pipefail
+
+log="${STUB_GH_LOG:-/dev/null}"
+printf '%s\n' "$*" >>"${log}"
+if [ -n "${STUB_GH_FAIL:-}" ] && [[ "$*" == *"${STUB_GH_FAIL}"* ]]; then
+  echo "gh: stubbed failure" >&2
+  exit 1
+fi
+
+flag() {
+  local name=$1
+  shift
+  while [ $# -gt 1 ]; do
+    if [ "$1" = "${name}" ]; then printf '%s' "$2"; return; fi
+    shift
+  done
+}
+
+case "$1 ${2:-}" in
+  "api "*) cat "${STUB_NOTES}" ;;
+  "release view")
+    [ -z "${STUB_NO_RELEASE:-}" ] || [ -f "${log}.page" ] || { echo "release not found" >&2; exit 1; }
+    if [[ "$*" == *name,body* ]]; then
+      if [ -n "${STUB_TAMPER:-}" ]; then echo "another page"; else cat "${log}.page"; fi
+    elif [ -n "${STUB_ASSETS:-}" ]; then
+      ls "${STUB_ASSETS}"
+    fi ;;
+  "release download") cp "${STUB_ASSETS}"/* "$(flag -D "$@")/" ;;
+  "release create" | "release edit")
+    { flag --title "$@"; printf '\n'; cat "$(flag --notes-file "$@")"; } >"${log}.page" ;;
+  *) echo "gh stub: unexpected call: $*" >&2; exit 1 ;;
+esac

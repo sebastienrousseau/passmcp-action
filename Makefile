@@ -15,7 +15,7 @@ all: lint spdx-check readme-check name-guard versions digest lockstep family tes
 # shellcheck then reads the scripts and the test suite.
 lint:
 	actionlint
-	shellcheck scripts/*.sh tests/traced.sh tests/bin/curl tests/helpers.bash tests/*.bats
+	shellcheck scripts/*.sh tests/traced.sh tests/bin/curl tests/bin/gh tests/helpers.bash tests/*.bats
 
 # The README follows the portfolio template: headings in order, no
 # unresolved {{VARIABLES}} (AGENTS.md §7.3).

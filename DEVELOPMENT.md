@@ -59,8 +59,8 @@ must be refused. Both need a runner; locally, `make smoke` is the first.
 The code this repository owns is the shell in `scripts/`. `tests/` holds a
 bats suite with a file per script: each test copies the files a script
 reads into its own temporary directory, runs the real script against it
-through `PASSMCP_ACTION_ROOT`, and puts `tests/bin/curl`, a stub, first on
-`PATH`, so no test touches the network.
+through `PASSMCP_ACTION_ROOT`, and puts `tests/bin/curl` and
+`tests/bin/gh`, stubs, first on `PATH`, so no test touches the network.
 
 ```bash
 BUNDLE_GEMFILE=tests/Gemfile bundle install
@@ -90,7 +90,8 @@ shields.io endpoint the README's coverage badge reads.
 | `scripts/family.sh` | This repository's row in passmcp's `ecosystem.json` is true |
 | `scripts/verify-release-versions.sh` | Every version-bearing place names the CHANGELOG version |
 | `scripts/coverage-badge.sh` | Writes the coverage endpoint file and enforces the floor |
-| `tests/` | The bats suite, the curl stub, and `traced.sh` for coverage |
+| `scripts/release-page.sh` | Composes the release page in the family layout, and publishes it on a tag |
+| `tests/` | The bats suite, the curl and gh stubs, and `traced.sh` for coverage |
 | `.github/workflows/manual.yml` | Builds the manual and `coverage.json`, deploys both to Pages |
 | `.github/workflows/scorecard.yml` | OpenSSF Scorecard, weekly and on push to `main` |
 | `.github/workflows/sync.yml` | On passmcp's release dispatch: pin the new digest and date the changelog section, on the release branch when it exists |
@@ -117,10 +118,26 @@ The version is passmcp's. A release here follows a passmcp release:
 3. Review and merge the pull request. CI's `make digest`,
    `make lockstep` and `make versions` are the review.
 4. Push a signed annotated tag `vX.Y.Z` with the message
-   `passmcp-action vX.Y.Z`. The release workflow publishes the changelog
-   section as the notes and moves `v0` to it.
+   `passmcp-action vX.Y.Z`. The release workflow publishes the release
+   page and moves `v0` to it.
 5. Read the tag, the release page and the `v0` tag back before calling it
    done.
+
+The release page is composed, never edited by hand.
+`scripts/release-page.sh` titles it `passmcp-action X.Y.Z` and writes the
+highlights, GitHub's generated `## What's Changed` (and
+`## New Contributors` when there are any), a `## Checksums` section that
+says no files are attached and names the image digest `action.yml` pins,
+and the `**Full Changelog**` link, then reads the page back and fails
+unless GitHub shows what it composed. `v0` gets no page: it is a pointer,
+not a version. Running the Release workflow by hand (`workflow_dispatch`)
+is the dry run: it verifies the newest CHANGELOG release and prints its
+page, publishing nothing and leaving `v0` alone. Locally (`gh` needs a
+token with contents access for GitHub's generated notes):
+
+```bash
+scripts/release-page.sh --note "The action runs \`$(scripts/pinned-image.sh)\`." vX.Y.Z
+```
 
 ## Conventions
 
