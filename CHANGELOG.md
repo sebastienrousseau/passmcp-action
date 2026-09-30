@@ -16,6 +16,12 @@ changelog says what changed in the diagnostic.
 
 ## [Unreleased]
 
+## [0.0.3] — 2026-09-30
+
+### Changed
+
+- **In lockstep with passmcp 0.0.3.** The action and the GitLab template pin `ghcr.io/sebastienrousseau/passmcp@sha256:88668e403cb4fe2e63032e9d69550acb59a449701d1f2ab1b52d436e96806dad`, the multi-arch image passmcp's release published for 0.0.3. Opened by the sync workflow on the release's dispatch; passmcp's own changelog says what changed in the diagnostic.
+
 ## [0.0.2] — 2026-09-29
 
 ### Added
@@ -68,6 +74,7 @@ The first release.
 - **passmcp in GitHub Actions and GitLab CI**, run from the image the release
   signed, pinned by digest, with the token never on a command line.
 
-[Unreleased]: https://github.com/sebastienrousseau/passmcp-action/compare/v0.0.2...HEAD
+[Unreleased]: https://github.com/sebastienrousseau/passmcp-action/compare/v0.0.3...HEAD
+[0.0.3]: https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.3
 [0.0.2]: https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.2
 [0.0.1]: https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.1
