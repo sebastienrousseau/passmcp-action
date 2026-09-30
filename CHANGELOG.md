@@ -16,6 +16,22 @@ changelog says what changed in the diagnostic.
 
 ## [Unreleased]
 
+## [0.0.4] — 2026-09-30
+
+### Added
+
+- **A README demo**, rendered from `.github/demo.tape` by `make demo`: the
+  action's own run step checking a local example server in the pinned
+  passmcp image, failing the step, and the outputs and report files it
+  leaves.
+
+### Changed
+
+- **In lockstep with passmcp 0.0.4.** The action and the GitLab template pin `ghcr.io/sebastienrousseau/passmcp@sha256:a619e709cddc568394e7bf3b700f9ca44d925c658087c882d5a077ad65cdfdc7`, the multi-arch image passmcp's release published for 0.0.4. Written by the sync workflow for passmcp's release; passmcp's own changelog says what changed in the diagnostic.
+- **Release pages are published in the family layout** by the release
+  workflow itself (Highlights, What's Changed, Checksums, Full Changelog),
+  so no page is rewritten by hand after a release.
+
 ## [0.0.3] — 2026-09-30
 
 ### Changed
@@ -86,7 +102,8 @@ The first release.
 - **passmcp in GitHub Actions and GitLab CI**, run from the image the release
   signed, pinned by digest, with the token never on a command line.
 
-[Unreleased]: https://github.com/sebastienrousseau/passmcp-action/compare/v0.0.3...HEAD
+[Unreleased]: https://github.com/sebastienrousseau/passmcp-action/compare/v0.0.4...HEAD
+[0.0.4]: https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.4
 [0.0.3]: https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.3
 [0.0.2]: https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.2
 [0.0.1]: https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.1

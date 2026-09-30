@@ -2,22 +2,33 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # A release of an action is a signed tag and a moving major tag. This
-# publishes the release page with the CHANGELOG section as its notes and
-# moves the `v0` tag to the release, which is what a workflow that says
-# `uses: sebastienrousseau/passmcp-action@v0` follows.
+# publishes the release page in the family's layout
+# (scripts/release-page.sh): the hand-written highlights from
+# docs/releases/vX.Y.Z.md, GitHub's generated "What's Changed", the
+# checksums section, which names the image the action runs because the
+# release attaches no files, and the full-changelog link. It then moves
+# the `v0` tag to the release, which is what a workflow that says
+# `uses: sebastienrousseau/passmcp-action@v0` follows. `v0` is a pointer,
+# not a version, and gets no release page of its own.
 name: Release
 
 on:
   push:
     tags: ["v*.*.*"]
+  # Dry-run mode: verifies the versions and prints the release page for
+  # the newest CHANGELOG release, then stops short of publishing anything
+  # or moving `v0`.
+  workflow_dispatch:
 
 permissions: {}
 
 jobs:
   release:
-    name: Publish release notes and move the major tag
+    name: Publish the release page and move the major tag
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' }}
     permissions:
       contents: write
     steps:
@@ -27,46 +38,35 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
+      # A dry run checks the newest CHANGELOG release instead of a tag.
       - name: The tag, the changelog, the snippets and the digest agree
+        id: ver
         run: |
           set -euo pipefail
-          scripts/verify-release-versions.sh "${GITHUB_REF_NAME}"
+          tag="${GITHUB_REF_NAME}"
+          if [ "${DRY_RUN}" = true ]; then
+            tag="v$(grep -Eo '^## \[[0-9]+\.[0-9]+\.[0-9]+\]' CHANGELOG.md | head -1 | tr -d '#[] ')"
+          fi
+          scripts/verify-release-versions.sh "${tag}"
           make digest
+          echo "tag=${tag}" >> "${GITHUB_OUTPUT}"
 
-      - name: Notes from the changelog section
-        env:
-          TAG: ${{ github.ref_name }}
-        run: |
-          set -euo pipefail
-          ver="${TAG#v}"
-          # shellcheck disable=SC2016 # awk's program is meant to be single-quoted
-          awk -v ver="$ver" '
-            $0 ~ "^## \\[" ver "\\]" { on = 1; next }
-            on && /^## \[/ { exit }
-            on { print }
-          ' CHANGELOG.md > notes.md
-          [ -s notes.md ] || { echo "no changelog section for $ver" >&2; exit 1; }
-          image=$(scripts/pinned-image.sh)
-          cat >> notes.md <<EOF
-
-          ---
-
-          Use it:
-
-          \`\`\`yaml
-          - uses: sebastienrousseau/passmcp-action@${TAG}
-          \`\`\`
-
-          Runs \`${image}\`.
-          EOF
-
-      - name: Publish
+      # Published, then read back; the step fails unless GitHub shows the
+      # page it composed. A dry run prints it instead, placing a tag that
+      # does not exist yet at this commit.
+      - name: The release page
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: ${{ github.ref_name }}
-        run: gh release create "$TAG" --title "passmcp-action $TAG" --notes-file notes.md --verify-tag
+          TAG: ${{ steps.ver.outputs.tag }}
+        run: |
+          set -euo pipefail
+          note="The action runs \`$(scripts/pinned-image.sh)\`, passmcp ${TAG#v}'s signed image, pinned by digest."
+          mode=(--publish)
+          [ "${DRY_RUN}" != true ] || mode=(--target "${GITHUB_SHA}")
+          scripts/release-page.sh "${mode[@]}" --note "${note}" "${TAG}"
 
       - name: Move the major tag
+        if: env.DRY_RUN != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ github.ref_name }}

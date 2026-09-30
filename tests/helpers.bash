@@ -16,10 +16,11 @@ pinned_digest() {
 
 setup_tree() {
   TREE="${BATS_TEST_TMPDIR}/tree"
-  mkdir -p "${TREE}/scripts" "${TREE}/docs"
+  mkdir -p "${TREE}/scripts" "${TREE}/docs" "${TREE}/.github"
   cp -R "${REPO}/CHANGELOG.md" "${REPO}/README.md" "${REPO}/action.yml" \
     "${REPO}/CITATION.cff" "${REPO}/templates" "${REPO}/examples" \
     "${REPO}/LICENSES" "${TREE}/"
+  cp "${REPO}/.github/demo.gif" "${TREE}/.github/"
   cp -R "${REPO}/docs/releases" "${TREE}/docs/"
   cp "${REPO}/scripts/lockstep.sh" "${TREE}/scripts/"
   align_versions
