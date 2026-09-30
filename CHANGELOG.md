@@ -16,6 +16,19 @@ changelog says what changed in the diagnostic.
 
 ## [Unreleased]
 
+### Added
+
+- **A README demo**, rendered from `.github/demo.tape` by `make demo`: the
+  action's own run step checking a local example server in the pinned
+  passmcp image, failing the step, and the outputs and report files it
+  leaves.
+
+### Changed
+
+- **Release pages are published in the family layout** by the release
+  workflow itself (Highlights, What's Changed, Checksums, Full Changelog),
+  so no page is rewritten by hand after a release.
+
 ## [0.0.3] — 2026-09-30
 
 ### Changed
