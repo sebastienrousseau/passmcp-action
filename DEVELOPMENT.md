@@ -96,6 +96,18 @@ shields.io endpoint the README's coverage badge reads.
 | `.github/workflows/scorecard.yml` | OpenSSF Scorecard, weekly and on push to `main` |
 | `.github/workflows/sync.yml` | On passmcp's release dispatch: pin the new digest and date the changelog section, on the release branch when it exists |
 | `.github/workflows/release.yml` | On a tag: publish the notes, move the `v0` tag |
+| `.github/demo.tape` | The README demo's recipe; `make demo` renders `.github/demo.gif` from it |
+
+`make demo` runs the action's own "Run passmcp" step, taken from
+`action.yml` with `yq`, the way a runner would: the pinned image against
+passmcp's example server (installed with Go at the lockstep release),
+reached through `host.docker.internal`. It needs `vhs`, `ttyd`, `ffmpeg`,
+`yq`, Go, and a Docker that resolves that name (Docker Desktop, colima).
+`DEMO_WORK`, the step's workspace, must be a directory Docker shares with
+its VM; colima shares only your home directory by default, so a clone
+outside it needs `make demo DEMO_WORK=$HOME/some/dir`. Regenerate the GIF
+when the step or passmcp's output changes, and leave 90 seconds between
+renders: the example server a render starts stops itself then.
 
 ## Release model
 

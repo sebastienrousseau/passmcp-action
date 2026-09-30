@@ -44,3 +44,33 @@ setup() { setup_tree; }
   run "${SCRIPTS}/readme-check.sh"
   [ "$status" -eq 0 ]
 }
+
+@test "a README without the demo block fails" {
+  edit README.md '<img src=".github/demo.gif"' '<img src=".github/other.gif"'
+  run "${SCRIPTS}/readme-check.sh"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"no demo block under the badge row"* ]]
+}
+
+@test "a demo block above the badges fails" {
+  printf '<p align="center">\n  <img src=".github/demo.gif" alt="the demo" width="100%%" />\n</p>\n' >"${BATS_TEST_TMPDIR}/block"
+  { cat "${BATS_TEST_TMPDIR}/block"; perl -0pe 's{\n<p align="center">\n  <img src="\.github/demo\.gif"[^\n]*\n</p>\n}{}' "${TREE}/README.md"; } >"${BATS_TEST_TMPDIR}/README.md"
+  mv "${BATS_TEST_TMPDIR}/README.md" "${TREE}/README.md"
+  run "${SCRIPTS}/readme-check.sh"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"no demo block under the badge row"* ]]
+}
+
+@test "a demo block with no alt text fails" {
+  perl -pi -e 's{(<img src="\.github/demo\.gif" alt=")[^"]*"}{$1"}' "${TREE}/README.md"
+  run "${SCRIPTS}/readme-check.sh"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"no demo block under the badge row"* ]]
+}
+
+@test "a README whose demo GIF is missing fails" {
+  rm "${TREE}/.github/demo.gif"
+  run "${SCRIPTS}/readme-check.sh"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *".github/demo.gif is missing"* ]]
+}

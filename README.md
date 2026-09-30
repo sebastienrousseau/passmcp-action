@@ -21,6 +21,10 @@
   <a href="https://github.com/sebastienrousseau/passmcp-action/blob/main/DEVELOPMENT.md#requirements"><img src="https://img.shields.io/badge/runner-linux%20%2B%20docker-93450a.svg?style=for-the-badge&logo=docker" alt="Runner: Linux with Docker" /></a>
 </p>
 
+<p align="center">
+  <img src=".github/demo.gif" alt="The action's Run passmcp step, taken from action.yml and run locally with the pinned image against passmcp's example server over plain http: the step exits 2, prints the error annotation, and sets exit-code, score and grade outputs beside the report files" width="100%" />
+</p>
+
 ---
 
 ## Contents

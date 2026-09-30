@@ -11,7 +11,7 @@ SPDX-PackageSupplier = "Sebastien Rousseau <sebastian.rousseau@gmail.com>"
 SPDX-PackageDownloadLocation = "https://github.com/sebastienrousseau/passmcp-action"
 
 [[annotations]]
-path = [".gitignore", ".github/CODEOWNERS"]
+path = [".gitignore", ".github/CODEOWNERS", ".github/demo.gif"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 Sebastien Rousseau <sebastian.rousseau@gmail.com>"
 SPDX-License-Identifier = "Apache-2.0"

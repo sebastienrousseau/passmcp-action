@@ -1,3 +1,5 @@
 passmcp-report/
 public/
 coverage/
+# make demo: the example server and the step workspace.
+build/
