@@ -11,6 +11,7 @@ adds the examples. What lives here is what is decided about the wrapper.
 |---|---|
 | [Architecture](ARCHITECTURE.md) | How one run flows, and how the action stays in step with passmcp |
 | [adr/](adr/README.md) | Decision records for this repository |
+| [Release 0.0.3](releases/v0.0.3.md) | The highlights of the 0.0.3 release |
 | [Release 0.0.2](releases/v0.0.2.md) | The highlights of the 0.0.2 release |
 | [Release 0.0.1](releases/v0.0.1.md) | The highlights of the first release |
 | [passmcp's CI guide](https://satellion.com/passmcp/docs/ci/) | Running passmcp in a pipeline in general, including the cases this action does not cover |

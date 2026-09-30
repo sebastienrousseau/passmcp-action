@@ -93,7 +93,7 @@ shields.io endpoint the README's coverage badge reads.
 | `tests/` | The bats suite, the curl stub, and `traced.sh` for coverage |
 | `.github/workflows/manual.yml` | Builds the manual and `coverage.json`, deploys both to Pages |
 | `.github/workflows/scorecard.yml` | OpenSSF Scorecard, weekly and on push to `main` |
-| `.github/workflows/sync.yml` | On passmcp's release dispatch: pin the new digest, open the changelog section, raise the pull request |
+| `.github/workflows/sync.yml` | On passmcp's release dispatch: pin the new digest and date the changelog section, on the release branch when it exists |
 | `.github/workflows/release.yml` | On a tag: publish the notes, move the `v0` tag |
 
 ## Release model
@@ -101,17 +101,15 @@ shields.io endpoint the README's coverage badge reads.
 The version is passmcp's. A release here follows a passmcp release:
 
 1. passmcp's release workflow fires `repository_dispatch` (`passmcp-release`)
-   with the version and the image digest. The sync workflow opens a pull
-   request pinning it. (Or run the sync workflow by hand with the
-   version.) With a `SYNC_TOKEN` secret, a fine-grained token with
-   `pull-requests: write` on this repository, the pull request's checks
-   start on their own; without it, close and reopen the pull request to
-   start them, because one opened with `GITHUB_TOKEN` triggers no
-   workflows. A dispatch runs on `main`. When a `feat/vX.Y.Z` branch has
-   already opened the undated `## [X.Y.Z]` section, run the sync on that
-   branch instead (`gh workflow run sync.yml --ref feat/vX.Y.Z -f
-   version=vX.Y.Z`): it pins the digest, dates the section, and opens its
-   pull request against that branch.
+   with the version and the image digest, and the sync workflow pins it.
+   When the `feat/vX.Y.Z` release branch exists, the sync commits the pins
+   onto it through the API and opens nothing: the release stays one pull
+   request. Otherwise it opens a pull request against `main`. (Or run the
+   sync by hand: `gh workflow run sync.yml -f version=vX.Y.Z`.) A pull
+   request the sync opens with `GITHUB_TOKEN` triggers no workflows; with a
+   `SYNC_TOKEN` secret, a fine-grained token with `pull-requests: write` on
+   this repository, its checks start on their own, and without one, close
+   and reopen it to start them.
 2. Add `docs/releases/vX.Y.Z.md`, the hand-written highlights, to that
    pull request; until it exists `make versions` keeps the pull request
    red. The sync workflow has already moved the snippets, the README's

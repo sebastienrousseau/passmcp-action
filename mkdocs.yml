@@ -54,5 +54,6 @@ nav:
       - 0003 The version is passmcp's: adr/0003-the-version-is-passmcps.md
       - 0004 Coverage traces the scripts: adr/0004-coverage-traces-the-scripts-not-bats.md
   - Releases:
+      - 0.0.3: releases/v0.0.3.md
       - 0.0.2: releases/v0.0.2.md
       - 0.0.1: releases/v0.0.1.md
