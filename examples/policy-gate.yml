@@ -24,7 +24,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: sebastienrousseau/passmcp-action@v0.0.4
+      - uses: sebastienrousseau/passmcp-action@v0.0.5
         id: passmcp
         with:
           endpoint: https://staging.mcp.example.com/mcp
