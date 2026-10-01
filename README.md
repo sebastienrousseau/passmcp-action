@@ -64,7 +64,7 @@
 ### As a GitHub Action
 
 ```yaml
-- uses: sebastienrousseau/passmcp-action@v0.0.4
+- uses: sebastienrousseau/passmcp-action@v0.0.5
   with:
     endpoint: https://mcp.example.com/mcp
     token: ${{ secrets.MCP_TOKEN }}
@@ -77,7 +77,7 @@ release workflow moves to every release.
 
 ```yaml
 include:
-  - remote: https://raw.githubusercontent.com/sebastienrousseau/passmcp-action/v0.0.4/templates/passmcp.gitlab-ci.yml
+  - remote: https://raw.githubusercontent.com/sebastienrousseau/passmcp-action/v0.0.5/templates/passmcp.gitlab-ci.yml
 
 variables:
   MCP_ENDPOINT: https://mcp.example.com/mcp
@@ -120,7 +120,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: sebastienrousseau/passmcp-action@v0.0.4
+      - uses: sebastienrousseau/passmcp-action@v0.0.5
         with:
           endpoint: https://mcp.example.com/mcp
           token: ${{ secrets.MCP_TOKEN }}
@@ -138,7 +138,7 @@ a log.
 
 ## The passmcp-action ecosystem
 
-Every component is released at **0.0.4** and moves in lockstep: one version across the family, released together ([docs/ecosystem.md](https://github.com/sebastienrousseau/passmcp/blob/main/docs/ecosystem.md)).
+Every component is released at **0.0.5** and moves in lockstep: one version across the family, released together ([docs/ecosystem.md](https://github.com/sebastienrousseau/passmcp/blob/main/docs/ecosystem.md)).
 
 | Component | Purpose | Use case |
 | :--- | :--- | :--- |
