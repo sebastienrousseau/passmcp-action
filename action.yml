@@ -57,7 +57,7 @@ inputs:
   image:
     description: "Override the image reference. The default is the image of the passmcp release this action version is in lockstep with, pinned by digest; overriding it means you are no longer running what the release signed."
     required: false
-    default: "ghcr.io/sebastienrousseau/passmcp@sha256:a619e709cddc568394e7bf3b700f9ca44d925c658087c882d5a077ad65cdfdc7"
+    default: "ghcr.io/sebastienrousseau/passmcp@sha256:ae285e9b8f55c560615b7afad94f37e3c43f9689128c0270fb3b3048be476065"
 
 outputs:
   exit-code:
@@ -180,7 +180,7 @@ runs:
 
     - name: Keep the evidence
       if: ${{ always() && inputs.upload == 'true' && inputs.command == 'check' }}
-      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       with:
         name: passmcp-report
         path: ${{ inputs.report-dir }}
