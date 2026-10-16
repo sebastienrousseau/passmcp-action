@@ -16,7 +16,7 @@ changelog says what changed in the diagnostic.
 
 ## [Unreleased]
 
-## [0.0.7] — 2026-10-16
+## [0.0.7] — 2026-10-17
 
 ### Changed
 
