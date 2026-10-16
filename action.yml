@@ -57,7 +57,7 @@ inputs:
   image:
     description: "Override the image reference. The default is the image of the passmcp release this action version is in lockstep with, pinned by digest; overriding it means you are no longer running what the release signed."
     required: false
-    default: "ghcr.io/sebastienrousseau/passmcp@sha256:a619e709cddc568394e7bf3b700f9ca44d925c658087c882d5a077ad65cdfdc7"
+    default: "ghcr.io/sebastienrousseau/passmcp@sha256:ae285e9b8f55c560615b7afad94f37e3c43f9689128c0270fb3b3048be476065"
 
 outputs:
   exit-code:
