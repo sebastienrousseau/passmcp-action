@@ -21,10 +21,10 @@ changelog says what changed in the diagnostic.
 - **From passmcp 0.0.4 straight to 0.0.7.** passmcp 0.0.5 and 0.0.6
   were never released here: their sync pull requests stopped at
   `make versions`, because no release branch had written the
-  `docs/releases/vX.Y.Z.md` highlights that check requires. A member
-  that falls behind joins at the family's next version, so this release
-  pins passmcp 0.0.7's image and 0.0.5 and 0.0.6 have no release of
-  their own.
+  `docs/releases/vX.Y.Z.md` highlights that check requires. Releasing
+  them now would publish versions passmcp has already superseded, so
+  this release pins passmcp 0.0.7's image and 0.0.5 and 0.0.6 have no
+  release of their own.
 - **The evidence upload runs `actions/upload-artifact` 7.0.2.** The
   action's "Keep the evidence" step moves from 7.0.1, pinned by commit;
   CI moves to `ruby/setup-ruby` 1.328.0 and `github/codeql-action`
