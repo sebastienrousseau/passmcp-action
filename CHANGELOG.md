@@ -16,6 +16,13 @@ changelog says what changed in the diagnostic.
 
 ## [Unreleased]
 
+### Fixed
+
+- **The action's description no longer counts passmcp's checks.** It
+  said 120 checks while passmcp 0.0.7 has 138, and a number here goes
+  stale with every passmcp release that adds a check; it now says
+  "checks in nine phases", as the README's family table does.
+
 ## [0.0.7] — 2026-10-17
 
 ### Changed

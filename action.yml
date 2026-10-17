@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 name: "passmcp MCP server diagnostic"
-description: "Run passmcp against a Model Context Protocol server: 120 checks in nine phases, every finding tied to the request that produced it, from the published image pinned by digest."
+description: "Run passmcp against a Model Context Protocol server: checks in nine phases, every finding tied to the request that produced it, from the published image pinned by digest."
 author: "Sebastien Rousseau"
 
 branding:
