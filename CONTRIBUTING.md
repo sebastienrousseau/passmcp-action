@@ -30,6 +30,9 @@ imperative subject.
 
 ## What a change needs
 
+- **A test for new or changed behaviour.** A script change comes with a
+  bats case in `tests/` that fails without it, and `make coverage` holds
+  `scripts/` to 85% line coverage.
 - **A changed input or output is documented in README.md** in the same
   pull request, with the example that shows it.
 - **The digest is not touched by hand.** `action.yml` and the GitLab
@@ -43,6 +46,7 @@ imperative subject.
 ## Pull request checklist
 
 - [ ] `make` passes
+- [ ] New or changed behaviour has a test that fails without it
 - [ ] README.md documents any changed input or output
 - [ ] `CHANGELOG.md` has an entry under `## [Unreleased]`
 - [ ] Commits are signed and carry a DCO sign-off
