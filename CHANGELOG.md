@@ -16,6 +16,12 @@ changelog says what changed in the diagnostic.
 
 ## [Unreleased]
 
+## [0.0.8] — 2026-10-18
+
+### Changed
+
+- **In lockstep with passmcp 0.0.8.** The action and the GitLab template pin `ghcr.io/sebastienrousseau/passmcp@sha256:756eddf26e50db9a925052947778cbc6cb25b4151a5bc6f644af55c04a91ac95`, the multi-arch image passmcp's release published for 0.0.8. Written by the sync workflow for passmcp's release; passmcp's own changelog says what changed in the diagnostic.
+
 ### Fixed
 
 - **SUPPORT.md and the issue chooser no longer send questions to GitHub
@@ -134,7 +140,8 @@ The first release.
 - **passmcp in GitHub Actions and GitLab CI**, run from the image the release
   signed, pinned by digest, with the token never on a command line.
 
-[Unreleased]: https://github.com/sebastienrousseau/passmcp-action/compare/v0.0.7...HEAD
+[Unreleased]: https://github.com/sebastienrousseau/passmcp-action/compare/v0.0.8...HEAD
+[0.0.8]: https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.8
 [0.0.7]: https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.7
 [0.0.4]: https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.4
 [0.0.3]: https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.3
