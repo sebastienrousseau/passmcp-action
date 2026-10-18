@@ -11,6 +11,7 @@ adds the examples. What lives here is what is decided about the wrapper.
 |---|---|
 | [Architecture](ARCHITECTURE.md) | How one run flows, and how the action stays in step with passmcp |
 | [adr/](adr/README.md) | Decision records for this repository |
+| [Release 0.0.8](releases/v0.0.8.md) | The highlights of the 0.0.8 release |
 | [Release 0.0.7](releases/v0.0.7.md) | The highlights of the 0.0.7 release |
 | [Release 0.0.4](releases/v0.0.4.md) | The highlights of the 0.0.4 release |
 | [Release 0.0.3](releases/v0.0.3.md) | The highlights of the 0.0.3 release |
