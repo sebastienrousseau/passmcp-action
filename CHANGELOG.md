@@ -18,6 +18,10 @@ changelog says what changed in the diagnostic.
 
 ### Fixed
 
+- **SUPPORT.md and the issue chooser no longer send questions to GitHub
+  Discussions**, which are not enabled on this repository; a question is
+  a GitHub issue, blank when no template fits.
+
 - **The action's description no longer counts passmcp's checks.** It
   said 120 checks while passmcp 0.0.7 has 138, and a number here goes
   stale with every passmcp release that adds a check; it now says

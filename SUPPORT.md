@@ -14,12 +14,14 @@ Where to take a question, in the order most likely to get you an answer.
 | Running passmcp in CI in general | [passmcp's CI guide](https://satellion.com/passmcp/docs/ci/) |
 | Contributing and the local gates | [DEVELOPMENT.md](DEVELOPMENT.md) |
 
-## Questions and discussion
+## Questions
 
-[GitHub Discussions](https://github.com/sebastienrousseau/passmcp-action/discussions)
-for anything about running passmcp in a pipeline. A question about a
-verdict — why passmcp judged a server the way it did — belongs in
-[passmcp's discussions](https://github.com/sebastienrousseau/passmcp/discussions).
+Open a [GitHub issue](https://github.com/sebastienrousseau/passmcp-action/issues)
+for anything about running passmcp in a pipeline; a blank issue is fine
+when no template fits. A question about a verdict, why passmcp judged a
+server the way it did, belongs in
+[passmcp's issues](https://github.com/sebastienrousseau/passmcp/issues).
+Neither repository has Discussions.
 
 ## Bugs and feature requests
 
