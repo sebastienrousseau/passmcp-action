@@ -15,6 +15,7 @@ the GitLab template is moved only by the sync workflow, on a passmcp release.
 
 - [ ] `make lint` passes (actionlint, shellcheck)
 - [ ] `make digest lockstep family` pass
+- [ ] New or changed behaviour has a bats test that fails without it, and `make coverage` passes
 - [ ] A changed input or output is documented in README.md
 - [ ] `CHANGELOG.md` has an entry under `## [Unreleased]`
 

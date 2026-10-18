@@ -22,6 +22,10 @@ changelog says what changed in the diagnostic.
   Discussions**, which are not enabled on this repository; a question is
   a GitHub issue, blank when no template fits.
 
+- **CONTRIBUTING.md and the pull request template ask for a test.** A
+  change to a script's behaviour comes with a bats case that fails
+  without it; the rule was only in AGENTS.md.
+
 - **The action's description no longer counts passmcp's checks.** It
   said 120 checks while passmcp 0.0.7 has 138, and a number here goes
   stale with every passmcp release that adds a check; it now says
