@@ -16,6 +16,12 @@ changelog says what changed in the diagnostic.
 
 ## [Unreleased]
 
+### Security
+
+- The manual's build tree (`docs/requirements.txt`) floors
+  `certifi >= 2026.10.19` (PYSEC-2026-4320, GHSA-6q48-6c7w-9gw2; it pinned
+  2026.7.22). Only certifi moves.
+
 ## [0.0.8] — 2026-10-18
 
 ### Changed
