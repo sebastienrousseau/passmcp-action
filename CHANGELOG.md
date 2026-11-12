@@ -16,6 +16,13 @@ changelog says what changed in the diagnostic.
 
 ## [Unreleased]
 
+## [0.0.9] — 2026-11-12
+
+### Changed
+
+- **In lockstep with passmcp 0.0.9.** The action and the GitLab template pin `ghcr.io/sebastienrousseau/passmcp@sha256:2f3be37521a05e7106ffa9568ebc9f8a9dd1103caa81d094d202d37dd294e2e2`, the multi-arch image passmcp's release published for 0.0.9. Written by the sync workflow for passmcp's release; passmcp's own changelog says what changed in the diagnostic.
+- **CI workflows and test dependencies updated**: `ruby/setup-ruby` 1.338.0, `github/codeql-action` 4.39.3, `DavidAnson/markdownlint-cli2-action` 25.0.0, `actions/setup-python` 7.1.0, `ossf/scorecard-action` 2.5.0, pinned by digest, and `bashcov` 4.0.2 (`simplecov` 1.3.2) in `tests/Gemfile.lock`.
+
 ### Security
 
 - The manual's build tree (`docs/requirements.txt`) floors
@@ -146,7 +153,8 @@ The first release.
 - **passmcp in GitHub Actions and GitLab CI**, run from the image the release
   signed, pinned by digest, with the token never on a command line.
 
-[Unreleased]: https://github.com/sebastienrousseau/passmcp-action/compare/v0.0.8...HEAD
+[Unreleased]: https://github.com/sebastienrousseau/passmcp-action/compare/v0.0.9...HEAD
+[0.0.9]: https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.9
 [0.0.8]: https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.8
 [0.0.7]: https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.7
 [0.0.4]: https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.4
