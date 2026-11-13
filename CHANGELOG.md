@@ -16,6 +16,16 @@ changelog says what changed in the diagnostic.
 
 ## [Unreleased]
 
+## [0.0.10] — 2026-11-13
+
+### Changed
+
+- **In lockstep with passmcp 0.0.10.** The action and the GitLab template pin `ghcr.io/sebastienrousseau/passmcp@sha256:161d1d5773ecb768db95e14f8e70cce4cf58a84b8a723db16da11d629cf15fe1`, the multi-arch image passmcp's release published for 0.0.10. Written by the sync workflow for passmcp's release; passmcp's own changelog says what changed in the diagnostic.
+- **README family table lists all 15 lockstep repositories**, adding the six
+  Apache-2.0 MCP language SDKs (`passmcp-sdk-go`, `passmcp-sdk-python`,
+  `passmcp-sdk-java`, `passmcp-sdk-cpp`, `passmcp-sdk-typescript`, and
+  `passmcp-sdk-rust`) alongside the existing nine family repositories.
+
 ## [0.0.9] — 2026-11-12
 
 ### Changed
@@ -153,7 +163,8 @@ The first release.
 - **passmcp in GitHub Actions and GitLab CI**, run from the image the release
   signed, pinned by digest, with the token never on a command line.
 
-[Unreleased]: https://github.com/sebastienrousseau/passmcp-action/compare/v0.0.9...HEAD
+[Unreleased]: https://github.com/sebastienrousseau/passmcp-action/compare/v0.0.10...HEAD
+[0.0.10]: https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.10
 [0.0.9]: https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.9
 [0.0.8]: https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.8
 [0.0.7]: https://github.com/sebastienrousseau/passmcp-action/releases/tag/v0.0.7
